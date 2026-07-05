@@ -30,7 +30,7 @@
 ![macOS](https://img.shields.io/badge/-macOS-000000?logo=apple&logoColor=white) -->
 
 A final‑year project that **collects SSL/TLS certificates at scale, keeps that collection fresh
-automatically, and turns it into security analytics.** The work has a global view and a special
+automatically, and turns it into security analytics — all presented on an interactive, near real-time dashboard.** The work has a global view and a special
 focus on Pakistan's (`.pk` / Pakistani IP space) certificate landscape.
 
 The project is built from three interconnected pillars:
@@ -72,15 +72,15 @@ The project is built from three interconnected pillars:
 ## 📂 Repository structure
 
 | Folder | What's inside | More info |
-|---|---|---|
-| **`dashboard/`** | The full‑stack analytics web app: Django backend (`backend/`) + Next.js frontend (`frontend/`). Reads certificates from MongoDB and renders them as interactive dashboard which shows all of the security analytics | [`dashboard/README.md`](./dashboard/README.md) |
-| **`ct-logs-renewal-pipeline/`** | The automation that keeps the dataset fresh by streaming Certificate Transparency logs, detecting certificate **renewals**, and ingesting **new** domains. | [CT-logs-renewal-pipeline](#-the-ct-logs-renewal-pipeline) |
-| **`ssl-certificates-crawler/`** | The collectors. `domain-based-crawler/` connects to domains on port 443; `ip-based-crawler/` scans Pakistan's IP ranges. Both parse certs with [zcertificate](https://github.com/zmap/zcertificate) and store them in MongoDB. | [Certificate-crawler](#-the-certificate-crawlers) |
-| **`reports/`** | Standalone audit scripts (Python + MongoDB shell `.js`) that generate one‑off reports: certificate lifecycle, expired/expiring‑soon, hash & signature algorithms, SAN "blast radius", shared keys, ZLint errors/warnings. |  |
-| **`figures-and-poster/`** | Project figures (Mermaid `.mmd`, Excalidraw, PNG) and the final **`poster.pdf`**. |
-| **`research-papers/`** | Reference papers that motivated the analyses (RSA key reuse propagation, shared keys, stale certificates). |  |
-| **`recordings/`** | Recording of the current running dashboard. |  |
-| **`archive/`** | Older, superseded work kept for reference only. **Not used by the current system.** |  |
+|:--- |:--- |:--- |
+| **<nobr>`dashboard/`<nobr>** | The full‑stack analytics web app: Django backend (`backend/`) + Next.js frontend (`frontend/`). Reads certificates from MongoDB and renders them as interactive dashboard which shows all of the security analytics | [`dashboard/README.md`](./dashboard/README.md) |
+| **<nobr>`ct-logs-renewal-pipeline/`<nobr>** | The automation that keeps the dataset fresh by streaming Certificate Transparency logs, detecting certificate **renewals**, and ingesting **new** domains. | [CT-logs-renewal-pipeline](#-the-ct-logs-renewal-pipeline) |
+| **<nobr>`ssl-certificates-crawler/`<nobr>** | The collectors. `domain-based-crawler/` connects to domains on port 443; `ip-based-crawler/` scans Pakistan's IP ranges. Both parse certs with [zcertificate](https://github.com/zmap/zcertificate) and store them in MongoDB. | [Certificate-crawler](#-the-certificate-crawlers) |
+| **<nobr>`reports/`<nobr>** | Standalone audit scripts (Python + MongoDB shell `.js`) that generate one‑off reports: certificate lifecycle, expired/expiring‑soon, hash & signature algorithms, SAN "blast radius", shared keys, ZLint errors/warnings. |  |
+| **<nobr>`figures-and-poster/`<nobr>** | Project figures (Mermaid `.mmd`, Excalidraw, PNG) and the final **`poster.pdf`**. |
+| **<nobr>`research-papers/`<nobr>** | Reference papers that motivated the analyses (RSA key reuse propagation, shared keys, stale certificates). |  |
+| **<nobr>`recordings/`<nobr>** | Recording of the current running dashboard. |  |
+| **<nobr>`archive/`<nobr>** | Older, superseded work kept for reference only. **Not used by the current system.** |  |
 
 > **Note on data:** Large datasets, MongoDB dumps, crawler logs, and raw certificate sources are
 > intentionally **not committed** (see `.gitignore`). The repo holds code, scripts, small sample
@@ -119,7 +119,8 @@ It does two jobs at once:
 | `new-data.py` | Pulls **brand‑new** domains from the stream, crawls them, inserts into the main DB, and appends confirmed domains to `global-dataset.csv`. |
 | `data-renew-merge.py` | Merges freshly crawled renewal certificates into the main DB. |
 | `global-dataset.csv` | The master list which contains all domain names of our main dataset (`index,domain`). |
-| `useful-scripts/` | Diagnostics & maintenance: CT‑endpoint health checks, "found" audits, duplicate/raw‑field cleanup, and legacy versions. |
+| `useful-scripts/` | Utility scripts used for database cleanup, auditing databases, and checking CT logs endpoints server health. |
+
 
 ### How the automation runs (the 8 steps in `main.py`)
 
