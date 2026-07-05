@@ -74,7 +74,7 @@ The project is built from three interconnected pillars:
 | Folder | What's inside | More info |
 |:--- |:--- |:--- |
 | **<nobr>`dashboard/`<nobr>** | The full‑stack analytics web app: Django backend (`backend/`) + Next.js frontend (`frontend/`). Reads certificates from MongoDB and renders them as interactive dashboard which shows all of the security analytics | [`dashboard/README.md`](./dashboard/README.md) |
-| **<nobr>`ct-logs-renewal-pipeline/`<nobr>** | The automation that keeps the dataset fresh by streaming Certificate Transparency logs, detecting certificate **renewals**, and ingesting **new** domains. | [CT-logs-renewal-pipeline](#-the-ct-logs-renewal-pipeline) |
+| **`ct&#8209;logs&#8209;renewal&#8209;pipeline/`** | The automation that keeps the dataset fresh by streaming Certificate Transparency logs, detecting certificate **renewals**, and ingesting **new** domains. | [CT-logs-renewal-pipeline](#-the-ct-logs-renewal-pipeline) |
 | **<nobr>`ssl-certificates-crawler/`<nobr>** | The collectors. `domain-based-crawler/` connects to domains on port 443; `ip-based-crawler/` scans Pakistan's IP ranges. Both parse certs with [zcertificate](https://github.com/zmap/zcertificate) and store them in MongoDB. | [Certificate-crawler](#-the-certificate-crawlers) |
 | **<nobr>`reports/`<nobr>** | Standalone audit scripts (Python + MongoDB shell `.js`) that generate one‑off reports: certificate lifecycle, expired/expiring‑soon, hash & signature algorithms, SAN "blast radius", shared keys, ZLint errors/warnings. |  |
 | **<nobr>`figures-and-poster/`<nobr>** | Project figures (Mermaid `.mmd`, Excalidraw, PNG) and the final **`poster.pdf`**. |
