@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Diagram Export</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  #toolbar {
+    padding: 14px 18px;
+    background: #1e1e1e;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  #toolbar button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    background: #4A90D9;
+    color: white;
+    cursor: pointer;
+  }
+  #toolbar button:hover { background: #3a7cc0; }
+  #toolbar span { color: #ccc; font-size: 13px; }
+  #canvasWrap {
+    padding: 30px;
+    background:
+      linear-gradient(45deg, #eee 25%, transparent 25%),
+      linear-gradient(-45deg, #eee 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #eee 75%),
+      linear-gradient(-45deg, transparent 75%, #eee 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+  #diagram { background: transparent; }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <button id="btnSvg" disabled onclick="downloadSVG()">Preparing…</button>
+  <button id="btnPng2" disabled onclick="downloadPNG(2)">Preparing…</button>
+  <button id="btnPng4" disabled onclick="downloadPNG(4)">Preparing…</button>
+  <span>Checkerboard below = transparency preview, not part of the export</span>
+</div>
+
+<div id="canvasWrap">
+  <div id="diagram" class="mermaid">
+flowchart TD
+    subgraph STREAM["&lt;b style='font-size:22px'&gt;GO SERVER&lt;/b&gt;&lt;br/&gt;&amp;nbsp;"]
+        CT["&lt;nobr&gt;&lt;b&gt;Certificate Transparency logs&lt;nobr/&gt;"]
+        GO["certstream-server-go binary&lt;br/&gt;&lt;nobr&gt;ws://localhost:8080/domains-only&lt;/nobr&gt;"]
+        GOS["go-server.py&lt;br/&gt;(WebSocket consumer)"]
+        DBSTREAM[("&lt;nobr&gt;&lt;b&gt;MongoDB:&lt;/b&gt; go-server.certificates&lt;br/&gt;{ domains[], found:false }")]
+        CT -->|new certs| GO --> GOS --> DBSTREAM
+        IDX["ct_index.json&lt;br/&gt;(resume checkpoint)"] -.-> GO
+    end
+
+    subgraph RUN["&lt;b style='font-size:22px'&gt;Scheduled run — main.py&lt;/b&gt;"]
+        S1["&lt;nobr&gt;&lt;b&gt;1·&lt;/b&gt; Stop the running Go server&lt;/nobr&gt;"]
+        S2["&lt;nobr&gt;&lt;b&gt;2·&lt;/b&gt; Ensure global-dataset.csv exists&lt;br/&gt;&lt;nobr&gt;(else build it via &lt;br&gt;&lt;b&gt;fetch-domains-names.py&lt;/b&gt;)&lt;/br)"]
+        S3["&lt;b&gt;3·&lt;/b&gt; &lt;b&gt;data-renew.py&lt;/b&gt;&lt;br/&gt;&lt;nobr&gt;Match known domains vs stream → data-renew.csv&lt;br/&gt;mark matches to found:true"]
+        S4A["&lt;b&gt;4A· &lt;nobr&gt; new-data.py&lt;/b&gt; (BACKGROUND) &lt;/nobr&gt;&lt;br/&gt;&lt;nobr&gt;crawl brand-new domains → main DB&lt;br/&gt;append to &lt;b&gt;global-dataset.csv&lt;/b&gt;"]
+        S4B["&lt;b&gt;4B· crawler-args.py&lt;/b&gt; (BLOCKING)&lt;br/&gt;&lt;nobr&gt;crawl renewal domains from &lt;/nobr&gt; &lt;nobr&gt;&lt;b&gt;data-renew.csv&lt;/b&gt; → data-renew.certificates&lt;/nobr&gt;"]
+        S5["&lt;b&gt;5· data-renew-merge.py&lt;/b&gt;&lt;br/&gt;upsert renewals → main DB"]
+        S6["&lt;nobr&gt;&lt;b&gt;6.&lt;/b&gt; Delete data-renew.csv + drop data-renew DB"]
+        S7["&lt;b&gt;7. run-generic.py&lt;/b&gt;&lt;br/&gt;&lt;nobr&gt;rebuild dashboard indexes + precomputed analytics"]
+        S8["&lt;nobr&gt;&lt;b&gt;8·&lt;/b&gt; Restart go-server.py (BACKGROUND)&lt;br/&gt;"]
+        S1 --> S2 --> S3 --> S4A
+        S3 --> S4B
+        S4B --> S5 --> S6 --> S7 --> S8
+    end
+
+    MAINDB[("&lt;b&gt;&lt;nobr&gt;MongoDB: hugging-face-792k&lt;/nobr/&gt;&lt;/b&gt; Main dataset")]
+    DASH(["Dashboard reads this DB"])
+
+    STREAM ~~~ RUN
+
+    DBSTREAM -.->|read by| S3
+    DBSTREAM -.->|read by| S4A
+    S4A --> MAINDB
+    S5 --> MAINDB
+    S8 -.->|feeds next cycle| DBSTREAM
+    MAINDB --> DASH
+
+    classDef streamNode fill:#DCEEFB,stroke:#4A90D9,stroke-width:1.5px,color:#1A3A5C
+    classDef runNode fill:#F3E8FF,stroke:#9B6DDB,stroke-width:1.5px,color:#3B2260
+    classDef dbNode fill:#FFF3D6,stroke:#E0A800,stroke-width:1.5px,color:#5C4400
+    classDef dashNode fill:#DFF5E1,stroke:#4CAF50,stroke-width:1.5px,color:#1B4620
+
+    class CT,GO,GOS,IDX streamNode
+    class S1,S2,S3,S4A,S4B,S5,S6,S7,S8 runNode
+    class DBSTREAM,MAINDB dbNode
+    class DASH dashNode
+
+    style STREAM fill:#F0F8FF,stroke:#4A90D9,stroke-width:1.5px
+    style RUN fill:#FAF5FF,stroke:#9B6DDB,stroke-width:1.5px
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'default',
+    themeVariables: { background: 'transparent' },
+    flowchart: { htmlLabels: true }
+  });
+
+  function svgToXMLString(svg, widthPx, heightPx) {
+    const clone = svg.cloneNode(true);
+    clone.setAttribute('width', widthPx);
+    clone.setAttribute('height', heightPx);
+    clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    clone.style.background = 'transparent';
+    // Make sure any foreignObject HTML divs are namespaced correctly
+    clone.querySelectorAll('foreignObject div').forEach(function (div) {
+      div.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    });
+    return new XMLSerializer().serializeToString(clone);
+  }
+
+  function getReadySVG() {
+    const svg = document.querySelector('#diagram svg');
+    if (!svg) {
+      alert('Diagram is not ready yet. Please wait a moment and try again.');
+      return null;
+    }
+    return svg;
+  }
+
+  function downloadSVG() {
+    const svg = getReadySVG();
+    if (!svg) return;
+    const bbox = svg.getBoundingClientRect();
+    const source = svgToXMLString(svg, bbox.width, bbox.height);
+    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'diagram.svg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function downloadPNG(scale) {
+    const svg = getReadySVG();
+    if (!svg) return;
+    const bbox = svg.getBoundingClientRect();
+    const width = Math.ceil(bbox.width);
+    const height = Math.ceil(bbox.height);
+    const source = svgToXMLString(svg, width, height);
+
+    // Data URI is more reliably supported than blob: URL for SVG->canvas rasterization
+    const svg64 = btoa(unescape(encodeURIComponent(source)));
+    const dataUrl = 'data:image/svg+xml;base64,' + svg64;
+
+    const img = new Image();
+    img.onload = function () {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = width * scale;
+        canvas.height = height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(scale, scale);
+        ctx.clearRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(function (blob) {
+          if (!blob) {
+            alert('PNG export failed while creating the image. Try the SVG download instead.');
+            return;
+          }
+          const pngUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = pngUrl;
+          a.download = 'diagram_' + scale + 'x.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () { URL.revokeObjectURL(pngUrl); }, 1000);
+        }, 'image/png');
+      } catch (err) {
+        alert('PNG export failed: ' + err.message + '. Try the SVG download instead.');
+      }
+    };
+    img.onerror = function () {
+      alert('Could not rasterize the diagram to PNG. Please use the SVG download instead.');
+    };
+    img.src = dataUrl;
+  }
+
+  window.addEventListener('load', function () {
+    mermaid.run({ querySelector: '.mermaid' }).then(function () {
+      document.getElementById('btnSvg').disabled = false;
+      document.getElementById('btnSvg').textContent = 'Download SVG (vector, transparent)';
+      document.getElementById('btnPng2').disabled = false;
+      document.getElementById('btnPng2').textContent = 'Download PNG @2x (transparent)';
+      document.getElementById('btnPng4').disabled = false;
+      document.getElementById('btnPng4').textContent = 'Download PNG @4x (transparent)';
+    }).catch(function (err) {
+      alert('Diagram failed to render: ' + err.message);
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -111,7 +111,7 @@ It does two jobs at once:
 |---|---|
 | `main.py` | **Orchestrator.** Runs the whole sequence in order (designed to be run on a schedule, e.g. cron). |
 | `go-server.py` | Manages the **certstream‑server‑go** binary and streams discovered domains from CT logs into MongoDB (`go-server.certificates`, marked `found: false`). |
-| `binaries/certstream-server-go_1.9.0_*` | The actual CT‑log listener (a compiled Go server). Connects to CT logs and exposes a WebSocket (`ws://localhost:8080/domains-only`).The executable currently bundled in this repository is for macOS. Please download the executable supported by your OS from the [Release page](https://github.com/d-Rickyy-b/certstream-server-go/releases/tag/v1.9.0) |
+| `binaries/certstream‑server‑go_1.9.0_*` | The actual CT‑log listener (a compiled Go server). Connects to CT logs and exposes a WebSocket (`ws://localhost:8080/domains-only`).The executable currently bundled in this repository is for macOS. Please download the executable supported by your OS from the [Release page](https://github.com/d-Rickyy-b/certstream-server-go/releases/tag/v1.9.0) |
 | `config.yml` | Configures the Go server: which CT log(s) to watch, buffer sizes, and crash recovery. Currently it is set to monitor all logs listed in the [Google Log list](https://www.gstatic.com/ct/log_list/v3/log_list.json) which are also included in the Chrome browser. |
 | `ct_index.json` | **Checkpoint file.** Remembers the last‑seen index per CT log so a restart resumes instead of re‑downloading millions of certs. |
 | `fetch-domains-names.py` | Builds the master domain list `global-dataset.csv` from the main MongoDB database.  |
@@ -127,42 +127,7 @@ It does two jobs at once:
 Each scheduled run executes these steps **in order**. Steps 4A and 8 launch **background**
 processes; everything else runs synchronously (blocking until done).
 
-```mermaid
-flowchart TD
-    subgraph STREAM["Always-on background streaming (GO SERVER)"]
-        CT["Certificate Transparency logs<br/>"]
-        GO["certstream-server-go binary<br/>ws://localhost:8080/domains-only"]
-        GOS["go-server.py<br/>(WebSocket consumer)"]
-        DBSTREAM[("MongoDB: go-server.certificates<br/>{ domains[], found:false }")]
-        CT -->|new certs| GO --> GOS --> DBSTREAM
-        IDX["ct_index.json<br/>(resume checkpoint)"] -.-> GO
-    end
-
-    subgraph RUN["Scheduled run — main.py"]
-        S1["1 · Stop the running Go server"]
-        S2["2 · Ensure global-dataset.csv exists<br/>(else build it via fetch-domains-names.py)"]
-        S3["3 · data-renew.py<br/>match known domains vs stream → data-renew.csv<br/>mark matches found:true"]
-        S4A["4A · new-data.py (BACKGROUND)<br/>crawl brand-new domains → main DB<br/>append to global-dataset.csv"]
-        S4B["4B · crawler-args.py (BLOCKING)<br/>crawl renewal domains from data-renew.csv<br/>→ data-renew.certificates"]
-        S5["5 · data-renew-merge.py<br/>upsert renewals → main DB"]
-        S6["6 · delete data-renew.csv + drop data-renew DB"]
-        S7["7 · run-generic.py<br/>rebuild dashboard indexes + precomputed analytics"]
-        S8["8 · Restart go-server.py (BACKGROUND)<br/>resume streaming for next run"]
-        S1 --> S2 --> S3 --> S4A
-        S3 --> S4B
-        S4B --> S5 --> S6 --> S7 --> S8
-    end
-
-    MAINDB[("MongoDB: hugging-face-792k<br/>MASTER dataset")]
-    DASH(["Dashboard reads this DB"])
-
-    DBSTREAM -.->|read by| S3
-    DBSTREAM -.->|read by| S4A
-    S4A --> MAINDB
-    S5 --> MAINDB
-    S8 -.->|feeds next cycle| DBSTREAM
-    MAINDB --> DASH
-```
+![Diagram](flowchart.png)
 
 **In words:**
 
