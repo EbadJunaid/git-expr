@@ -127,7 +127,7 @@ It does two jobs at once:
 Each scheduled run executes these steps **in order**. Steps 4A and 8 launch **background**
 processes; everything else runs synchronously (blocking until done).
 
-![Diagram](flowchart-1.png)
+![Diagram](flowchart.png)
 
 **In words:**
 
