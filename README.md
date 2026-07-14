@@ -1,4 +1,4 @@
-# FYP — SSL/TLS Certificate Ecosystem Analysis
+# FYP — SSL/TLS Certificate Ecosystem Analysis Aussie
 
 A final‑year project that **collects SSL/TLS certificates at scale, keeps that collection fresh
 automatically, and turns it into security analytics — all presented on an interactive, near real-time dashboard.** The work has a global view and a special
@@ -12,20 +12,22 @@ The project is built from three interconnected pillars:
 3. **Dashboard** — a Django + Next.js web app that visualizes everything (CA market share,
    encryption strength, validity, shared keys, vulnerabilities, and more).
 
+## 🚀 Where to start
 
-> **Where to start:** To *run the website*, jump to [`dashboard/README.md`](./dashboard/README.md).
-> To *understand the data renewal pipeline*, read [The CT‑logs renewal pipeline](#-the-ct-logs-renewal-pipeline)
-> and [The certificate crawlers](#-the-certificate-crawlers) below.
+- **Run the dashboard:** See [`dashboard/README.md`](dashboard/README.md).
+- **Understand the data renewal pipeline:** Read [The CT-logs renewal pipeline](#-the-ct-logs-renewal-pipeline).
+- **Learn how certificates are collected:** Read [The certificate crawlers](#-the-certificate-crawlers).
 
-
-> **Platform note**
-
+> [!NOTE]
+> **Platform compatibility**
+>
 > Unless stated otherwise, all commands in this README use Unix-style syntax (`python3` and forward-slash paths `/`).
 >
-> If you're using Windows:
+> **Windows users:**
 > - Replace `python3` with `python`.
 > - You may use backslashes (`\`) instead of forward slashes (`/`) in file paths if you prefer.
 
+<br>
 
 
 ## 📂 Repository structure
