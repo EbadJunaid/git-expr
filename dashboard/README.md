@@ -44,7 +44,7 @@ It transforms the certificates collected by this project's crawlers into interac
 
 The dashboard presents parsed SSL/TLS certificates through **11 analytics pages**, each focusing on a different aspect of certificate analysis and security.
 
-| <span style="white-space: nowrap">Page (URL under <code>/dashboard</code>)</span> | What it shows |
+| <nobr>Page (URL under `/dashboard`)</nobr> | What it shows |
 |---|---|
 | `overview` | Home page: total / active / expiring‑soon / expired certificate counts, plus a searchable, paginated certificate table. |
 | `ca-analytics` | Certificate Authority market share, top CAs, issuer × validation‑level matrix, self‑signed analysis. |
@@ -53,7 +53,7 @@ The dashboard presents parsed SSL/TLS certificates through **11 analytics pages*
 | `signature-hash` | Signature algorithms, hash compliance %, weak‑hash alerts, key‑size distribution, adoption trends. |
 | `san-analytics` | Subject Alternative Names — SANs per certificate, wildcard vs standard, top TLDs, multi‑domain ("blast radius") certs. |
 | `shared-keys` | Public‑key **reuse** detection (a security risk): groups of certificates sharing the same key. Drill into a group via `shared-keys/[publicKeyHash]`. |
-| `vulnerabilities` | A **ranked risk view** scoring each certificate. See [`vulnerablities.md`](./vulnerablities.md) for the exact scoring formula. |
+| `vulnerabilities` | A **ranked risk view** scoring each certificate. See [`vulnerabilities.md`](./vulnerabilities.md) for the exact scoring formula. |
 | `active-vs-expired` | Detailed breakdown of active, expiring, and expired certificates |
 | `issuer-countries` | Distribution of certificates by country — e.g. how many belong to Pakistan (`.pk`), based on our dataset. |
 | `cas-vs-domains` | Shows how many certificates each Certificate Authority has issued — e.g. how many were issued by Let's Encrypt |
@@ -587,7 +587,7 @@ Exact routes are defined in `backend/certificates/urls.py` and each sub‑module
 ```
 dashboard/
 ├── README.md                  ← this file
-├── vulnerablities.md          ← exact risk-scoring formula for the Vulnerabilities page
+├── vulnerabilities.md          ← exact risk-scoring formula for the Vulnerabilities page
 │
 ├── backend/                   ← Django 5 API
 │   ├── manage.py              ← Django entry point (runserver, migrate, …)
