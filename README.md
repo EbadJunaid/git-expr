@@ -279,7 +279,7 @@ python3 static-ip-crawler.py
 
 ---
 
-### 🛠 Core technologies
+### 🛠 Tech Stack
 
 | Area | Technologies |
 |---|---|
