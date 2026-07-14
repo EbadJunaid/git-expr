@@ -44,8 +44,9 @@ It transforms the certificates collected by this project's crawlers into interac
 
 The dashboard presents parsed SSL/TLS certificates through **11 analytics pages**, each focusing on a different aspect of certificate analysis and security.
 
-| Page&nbsp;(URL&nbsp;under&nbsp;`/dashboard`) | What it shows |
-|---|---|
+All routes below are relative to `/dashboard`.
+
+| Route | What it shows |
 | `overview` | Home page: total / active / expiring‑soon / expired certificate counts, plus a searchable, paginated certificate table. |
 | `ca-analytics` | Certificate Authority market share, top CAs, issuer × validation‑level matrix, self‑signed analysis. |
 | `ca-ranking` | Ranks Certificate Authorities based on certificate quality and security characteristics. See [`ca-ranking.md`](../formula/ca-ranking.md) |
@@ -125,15 +126,6 @@ pre‑computed collections instead of scanning millions of documents on every cl
 | CORS | django‑cors‑headers | 4.3+ |
 | Cache (optional) | redis | 5.0+ |
 | Database | MongoDB | 27017 (local) |
-
-> [!NOTE]
-> Certificate data is stored directly in **MongoDB** using `pymongo`—this project does **not** use Djongo or Django REST Framework. Django's built-in `DATABASES` configuration is only used for a small local SQLite database (`internal_db`) that stores framework metadata such as sessions and admin information.
-
-> Note: The project talks to MongoDB **directly with `pymongo`** (not Djongo, and not Django REST
-> Framework). Django's own `DATABASES` setting only uses a tiny local SQLite file (`internal_db`)
-> for Django internals (admin/sessions). All certificate data lives in MongoDB.
-
-
 
 
 
