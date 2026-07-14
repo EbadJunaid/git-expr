@@ -206,7 +206,7 @@ python3 crawler-args.py --db-name my-crawl --csv-file ../datasets/pk-domains.csv
 | File / Folder | Purpose |
 |---|---|
 | `datasets/` | Contains [`pk-domains.csv`](ssl-certificates-crawler/domain-based-crawler/datasets/pk-domains.csv) together with the scripts used to extract .pk domains from multiple global datasets (see below).
-| `mini-dataset.csv` | Small dataset for testing and debugging. |
+| `mini‑dataset.csv` | Small dataset for testing and debugging. |
 
 
 
@@ -244,11 +244,11 @@ Both `interactive-ip-crawler.py` and `static-ip-crawler.py` read their MongoDB c
 
 | File / Data | Purpose |
 |---|---|
-| `interactive-ip-crawler.py` | Production crawler (40 worker threads). Supports both CIDR blocks and plain IP lists, optional dummy SNI, detailed error classification, and stores parsed certificates in MongoDB. |
-| `static-ip-crawler.py` | Simplified crawler (20 worker threads) with fixed configuration for quick testing. |
-| `apnic-global-to-pk-cidrs.py` | Extracts Pakistan's IPv4 allocations from the global [APNIC](https://ftp.apnic.net/apnic/stats/apnic/) registry and converts them into CIDR blocks. |
-| `pk-ip-ranges.csv` | Complete list of Pakistan's IPv4 CIDR blocks used for full scans. |
-| `pk-ip-ranges-mini.csv` | Small subset of CIDR blocks for quick testing. |
+| `interactive‑ip‑crawler.py` | Production crawler (40 worker threads). Supports both CIDR blocks and plain IP lists, optional dummy SNI, detailed error classification, and stores parsed certificates in MongoDB. |
+| `static‑ip‑crawler.py` | Simplified crawler (20 worker threads) with fixed configuration for quick testing. |
+| `apnic‑global‑to‑pk‑cidrs.py` | Extracts Pakistan's IPv4 allocations from the global [APNIC](https://ftp.apnic.net/apnic/stats/apnic/) registry and converts them into CIDR blocks. |
+| `pk‑ip‑ranges.csv` | Complete list of Pakistan's IPv4 CIDR blocks used for full scans. |
+| `pk‑ip‑ranges‑mini.csv` | Small subset of CIDR blocks for quick testing. |
 | `results.txt` | Experimental results comparing scans with and without SNI, showing improved certificate discovery when using a dummy SNI value. |
 
 **How to run**
@@ -279,7 +279,7 @@ python3 static-ip-crawler.py
 
 ---
 
-## 🛠 Core technologies
+### 🛠 Core technologies
 
 | Area | Technologies |
 |---|---|
@@ -291,20 +291,19 @@ python3 static-ip-crawler.py
 
 
 
-## ▶️ Quick start
+### ▶️ Quick start
 
-1. Prepare a dataset by following the instructions in dashboard/README.md.
+1. Prepare a dataset by following the instructions in [`dashboard/README.md`](dashboard/README.md).
 2. Start the dashboard.
 3. (Optional) Schedule the CT renewal pipeline.
 
 
-
-## ⭐ Closing note
+### ⭐ Closing note
 
 This project was developed as a final-year undergraduate research project with the goal of building a scalable ecosystem for collecting, maintaining, and analyzing SSL/TLS certificates at scale. While the current implementation focuses on Pakistan's certificate landscape and has been validated on a dataset of over **800,000** real-world certificates, the architecture is designed to scale to significantly larger datasets with additional computing resources.
 
 Contributions, suggestions, and feedback are always welcome.
 
 
-## LICENSE
+### LICENSE
 This project is licensed under the MIT License.
