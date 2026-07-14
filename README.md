@@ -1,4 +1,4 @@
-# FYP — SSL/TLS Certificate Ecosystem Analysis Aussie
+# FYP — SSL/TLS Certificate Ecosystem Analysis
 
 A final‑year project that **collects SSL/TLS certificates at scale, keeps that collection fresh
 automatically, and turns it into security analytics — all presented on an interactive, near real-time dashboard.** The work has a global view and a special
@@ -66,14 +66,14 @@ It does two jobs at once:
 | File | Role |
 |---|---|
 | `main.py` | **Orchestrator**. Runs the complete pipeline from start to finish, including certificate renewal detection, new-domain discovery, database updates, and analytics regeneration. It is intended to be executed on a schedule (for example, using cron or Windows Task Scheduler) so the dataset stays continuously up to date. |
-| `go-server.py` | Manages the **`certstream-server-go`** binary — a compiled Go server that connects to CT logs and exposes a WebSocket (`ws://localhost:8080/domains-only`). Streams discovered domains into MongoDB (`go-server.certificates`, marked `found: false`). |
+| `go‑server.py` | Manages the **`certstream-server-go`** binary — a compiled Go server that connects to CT logs and exposes a WebSocket (`ws://localhost:8080/domains-only`). Streams discovered domains into MongoDB (`go-server.certificates`, marked `found: false`). |
 | `config.yml` | Configures the Go server: which CT log(s) to watch, buffer sizes, and crash recovery. Currently it is set to monitor all logs listed in the [Google Log list](https://www.gstatic.com/ct/log_list/v3/log_list.json) which are also included in the Chrome browser. |
 | `ct_index.json` | **Checkpoint file.**  Saves the last‑seen position per CT log so a restart resumes exactly where it left off. |
-| `fetch-domains-names.py` | Builds the master domain list `global-dataset.csv` from the main MongoDB database.  |
-| `data-renew.py` | Cross‑references `global-dataset.csv` against the live CT stream to find **renewal candidates** → writes `data-renew.csv`. |
-| `data-renew-merge.py` | Merges freshly crawled renewal certificates into the main DB. |
+| `fetch‑domains‑names.py` | Builds the master domain list `global-dataset.csv` from the main MongoDB database.  |
+| `data‑renew.py` | Cross‑references `global-dataset.csv` against the live CT stream to find **renewal candidates** → writes `data-renew.csv`. |
+| `data‑renew‑merge.py` | Merges freshly crawled renewal certificates into the main DB. |
 | `new-data.py` | Pulls **brand‑new** domains from the stream, crawls them, inserts them into the main DB, and appends confirmed domains to `global-dataset.csv`. |
-| `global-dataset.csv` | The master domain list (`index,domain`). |
+| `global‑dataset.csv` | The master domain list (`index,domain`). |
 
 
 ### How the automation runs (the 8 steps in `main.py`)
