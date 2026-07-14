@@ -44,7 +44,7 @@ It transforms the certificates collected by this project's crawlers into interac
 
 The dashboard presents parsed SSL/TLS certificates through **11 analytics pages**, each focusing on a different aspect of certificate analysis and security.
 
-| Page (URL under `/dashboard`) | What it shows |
+| <span style="white-space: nowrap">Page (URL under <code>/dashboard</code>)</span> | What it shows |
 |---|---|
 | `overview` | Home page: total / active / expiring‑soon / expired certificate counts, plus a searchable, paginated certificate table. |
 | `ca-analytics` | Certificate Authority market share, top CAs, issuer × validation‑level matrix, self‑signed analysis. |
