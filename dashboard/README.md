@@ -48,16 +48,16 @@ All routes below are relative to `/dashboard`.
 | Route | What it shows |
 |---|---|
 | `overview` | Home page: total / active / expiring‑soon / expired certificate counts, plus a searchable, paginated certificate table. |
-| `ca-analytics` | Certificate Authority market share, top CAs, issuer × validation‑level matrix, self‑signed analysis. |
-| `ca-ranking` | Ranks Certificate Authorities based on certificate quality and security characteristics. See [`ca-ranking.md`](../formula/ca-ranking.md) |
-| `validity-analytics` | Validity period analysis — average lifetime, expiring in 30/90 days, compliance with the 398‑day rule, issuance timeline. |
-| `signature-hash` | Signature algorithms, hash compliance %, weak‑hash alerts, key‑size distribution, adoption trends. |
-| `san-analytics` | Subject Alternative Names — SANs per certificate, wildcard vs standard, top TLDs, multi‑domain ("blast radius") certs. |
-| `shared-keys` | Public‑key **reuse** detection (a security risk): groups of certificates sharing the same key. Drill into a group via `shared-keys/[publicKeyHash]`. |
+| `ca‑analytics` | Certificate Authority market share, top CAs, issuer × validation‑level matrix, self‑signed analysis. |
+| `ca‑ranking` | Ranks Certificate Authorities based on certificate quality and security characteristics. See [`ca-ranking.md`](../formula/ca-ranking.md) |
+| `validity‑analytics` | Validity period analysis — average lifetime, expiring in 30/90 days, compliance with the 398‑day rule, issuance timeline. |
+| `signature‑hash` | Signature algorithms, hash compliance %, weak‑hash alerts, key‑size distribution, adoption trends. |
+| `san‑analytics` | Subject Alternative Names — SANs per certificate, wildcard vs standard, top TLDs, multi‑domain ("blast radius") certs. |
+| `shared‑keys` | Public‑key **reuse** detection (a security risk): groups of certificates sharing the same key. Drill into a group via `shared‑keys/[publicKeyHash]`. |
 | `vulnerabilities` | A **ranked risk view** scoring each certificate. See [`vulnerabilities.md`](./vulnerabilities.md) for the exact scoring formula. |
-| `active-vs-expired` | Detailed breakdown of active, expiring, and expired certificates |
-| `issuer-countries` | Distribution of certificates by country — e.g. how many belong to Pakistan (`.pk`), based on our dataset. |
-| `cas-vs-domains` | Shows how many certificates each Certificate Authority has issued — e.g. how many were issued by Let's Encrypt |
+| `active‑vs‑expired` | Detailed breakdown of active, expiring, and expired certificates |
+| `issuer‑countries` | Distribution of certificates by country — e.g. how many belong to Pakistan (`.pk`), based on our dataset. |
+| `cas‑vs‑domains` | Shows how many certificates each Certificate Authority has issued — e.g. how many were issued by Let's Encrypt |
 
 Additional detail pages: 
 
