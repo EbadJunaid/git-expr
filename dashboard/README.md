@@ -10,7 +10,7 @@ It transforms the certificates collected by this project's crawlers into interac
 > [!TIP]
 > **First time here?**
 >
-> Read this document once from top to bottom, then follow **Part 1 → Part 5** in order.
+> Read this document once from top to bottom, then follow **Part 1 → Part 6** in order.
 >
 > The most common reason the dashboard displays empty pages is that MongoDB has not been populated with certificate data. See **[Preparing the dataset](#-preparing-the-dataset)** before running the application.
 
@@ -49,7 +49,7 @@ All routes below are relative to `/dashboard`.
 |---|---|
 | `overview` | Home page: total / active / expiring-soon / expired certificate counts, plus a searchable certificate table.|
 | `ca‑analytics` | Certificate Authority market share, top CAs, issuer × validation‑level matrix, self‑signed analysis. |
-| `ca‑ranking` | Ranks Certificate Authorities based on certificate quality and security metrics. See [`ca-ranking.md`](../formula/ca-ranking.md) |
+| `ca‑ranking` | Ranks Certificate Authorities based on certificate quality and security metrics. See [`ca-ranking.md`](./ca-ranking.md) |
 | `validity‑analytics` | Validity period analysis — average lifetime, 30/90-day expiry, 398-day rule, and issuance timeline.|
 | `signature‑hash` | Signature algorithms, hash compliance %, weak‑hash alerts, key‑size distribution, adoption trends. |
 | `san‑analytics` | Subject Alternative Names — SANs per certificate, wildcard vs standard, top TLDs, multi‑domain certificates. |
@@ -66,7 +66,7 @@ Additional detail pages:
 
 **Key features**
 
-- **Scope switcher** — the same physical database can be sliced by country (Global, Pakistan, India, …). The frontend appends a `?scope=` parameter to every request; the backend filters accordingly. (Switcher UI in the header; backed by `Scopes.json`.)
+- **Scope switcher** — the same physical database can be sliced by country (Global, Pakistan, India, …). The frontend appends a `?scope=` parameter to every request; the backend filters accordingly. (Switcher UI in the header)
 - **Dark / light theme**, global search and advanced filtering. 
 
 ---
@@ -78,21 +78,21 @@ Additional detail pages:
                        │  http://localhost:3000
                        ▼
         ┌──────────────────────────────┐
-        │   Frontend — Next.js 16       │   React 19 + Tailwind v4 + SWR + Recharts
-        │   src/app/dashboard/*         │
+        │   Frontend — Next.js 16      │   React 19 + Tailwind v4 + SWR + Recharts
+        │   src/app/dashboard/*        │
         └──────────────┬───────────────┘
                        │  fetch JSON  →  http://localhost:8000/api/...?scope=all
                        ▼
         ┌──────────────────────────────┐
-        │   Backend — Django 5          │   views → controllers → db_queries
-        │   certificates/ app           │   (+ optional Redis cache)
+        │   Backend — Django 5         │   views → controllers → db_queries
+        │   certificates/ app          │   (+ optional Redis cache)
         └──────────────┬───────────────┘
                        │  pymongo
                        ▼
         ┌──────────────────────────────┐
-        │   MongoDB  (localhost:27017)  │
-        │   • hugging-face-700k         │  ← raw parsed certificates
-        │   • hugging-face-700k-results │  ← PRE-COMPUTED analytics (for speed)
+        │   MongoDB  (localhost:27017) │
+        │  • hugging-face-700k         │  ← raw parsed certificates
+        │  • hugging-face-700k-results │  ← PRE-COMPUTED analytics (for speed)
         └──────────────────────────────┘
 ```
 
@@ -242,7 +242,7 @@ The dashboard reads its MongoDB connection settings and database names from the 
 
 > [!TIP]
 > Want to see what the dataset looks like before downloading or crawling it?
-> Check [`data-sample.json`](../data-sample.json), which contains a real parsed certificate exactly as it is stored in MongoDB.
+> Check [`data-sample.json`](./data-sample.json), which contains a real parsed certificate exactly as it is stored in MongoDB.
 
 There are three ways to prepare the dataset.
 
@@ -305,7 +305,7 @@ Generating the analytics database can take anywhere from several minutes to over
 
 This option is intended for users who want to collect their own SSL/TLS certificates instead of using the published dataset.
 
-Run the [Domain-based crawler](../README-main-final.md#1-domainbased-crawler) described in the main project README to build your own certificate dataset.
+Run the [Domain-based crawler](../README.md#1-domainbased-crawler) described in the main project README to build your own certificate dataset.
 
 
 Once the crawl has finished, generate the dashboard analytics database:
@@ -473,10 +473,11 @@ dashboard/
 │
 ├── data-sample.json             # Example parsed certificate
 ├── vulnerabilities.md           # Risk scoring documentation
+├── ca-ranking.md                # CA ranking documentation 
 └── README.md
 ```
 
-For a complete overview of the entire project (including the crawlers and CT renewal pipeline), see the **main project README**.
+For a complete overview of the entire project (including the crawlers and CT renewal pipeline), see the [main project README](../README.md).
 
 
 ## 🩺 Troubleshooting

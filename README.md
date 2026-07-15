@@ -32,12 +32,12 @@ The project is built from three interconnected pillars:
 
 ## 📂 Repository structure
 
-| Folder | What's inside | More info |
-|---|---|---|
-| **`dashboard/`** | The full‑stack analytics web app: Django backend (`backend/`) + Next.js frontend (`frontend/`). Reads certificates from MongoDB and renders them as interactive dashboard which shows all of the security analytics | [`dashboard/README.md`](./dashboard/README.md) |
-| **`ct‑logs‑renewal‑pipeline/`** | The automation that keeps the dataset fresh by streaming Certificate Transparency logs, detecting certificate **renewals**, and ingesting **new** domains. | [CT-logs-renewal-pipeline](#-the-ct-logs-renewal-pipeline) |
-| **`ssl-certificates-crawler/`** | The collectors. `domain-based-crawler/` connects to domains on port 443; `ip-based-crawler/` scans Pakistan's IP ranges. Both parse certs with [zcertificate](https://github.com/zmap/zcertificate) and store them in MongoDB. | [Certificate-crawler](#-the-certificate-crawlers) |
-| **`binaries/`** | Pre-compiled executables required by the project. The certificate crawlers use [zcertificate](https://github.com/zmap/zcertificate) to parse SSL/TLS certificates, while the CT Logs Renewal Pipeline uses [certstream-server-go](https://github.com/d-Rickyy-b/certstream-server-go/releases) to stream Certificate Transparency (CT) logs. Download the executable for your operating system, place it in this `binaries/` folder, and rename it exactly to `zcertificate` and `certstream-server-go`. |
+| Folder | What's inside |
+|---|---|
+| **`dashboard/`** | The full‑stack analytics web app: Django backend (`backend/`) + Next.js frontend (`frontend/`). Reads certificates from MongoDB and renders them as interactive dashboard which shows all of the security analytics
+| **`ct‑logs‑renewal‑pipeline/`** | The automation that keeps the dataset fresh by streaming Certificate Transparency logs, detecting certificate **renewals**, and ingesting **new** domains. 
+| **`ssl-certificates-crawler/`** | The collectors. `domain-based-crawler/` connects to domains on port 443; `ip-based-crawler/` scans Pakistan's IP ranges. Both parse certs with [zcertificate](https://github.com/zmap/zcertificate) and store them in MongoDB. 
+| **`binaries/`** | Pre-compiled executables required by the project. The certificate crawlers use [zcertificate](https://github.com/zmap/zcertificate) to parse SSL/TLS certificates, while the CT Logs Renewal Pipeline uses [certstream-server-go](https://github.com/d-Rickyy-b/certstream-server-go/releases) to stream Certificate Transparency (CT) logs. Download the executable for your operating system, place it in this `binaries/` folder, and rename it exactly to `zcertificate` and `certstream-server-go`.<br><br>**Linux/macOS only:** After downloading, make both binaries executable:<br><code>chmod +x binaries/zcertificate binaries/certstream-server-go</code><br>Windows users can skip this step. |
 | **`useful-scripts/`** | Helper tools for database maintenance (remove raw field from dataset, remove fingerprint duplicate certificates , adds the scope field), checking CT log endpoint health, cleaning up domain CSV files, and preparing small test databases from a larger dataset. |
 | **`assets/`** | Diagrams (Mermaid, Excalidraw, PNG), animations, and the project poster. |
 | **`research-papers/`** | Reference papers that motivated the analyses |  |
@@ -63,21 +63,17 @@ It does two jobs at once:
 
 ### Pipeline Architecture
 
-<table>
-<tr>
-<th>File</th>
-<th style="min-width:550px">Role</th>
-</tr>
-<tr><td><code>main.py</code></td><td><strong>Orchestrator</strong>. Runs the full pipeline — renewal detection, new‑domain discovery, database updates, and analytics regeneration. Meant to run on a schedule (cron / Task Scheduler) so the dataset stays up to date.</td></tr>
-<tr><td><code>go‑server.py</code></td><td>Manages the <strong><code>certstream-server-go</code></strong> binary — a compiled Go server connecting to CT logs, exposing a WebSocket (<code>ws://localhost:8080/domains-only</code>). Streams discovered domains into MongoDB (<code>go-server.certificates</code>, marked <code>found: false</code>).</td></tr>
-<tr><td><code>config.yml</code></td><td>Configures the Go server: which CT log(s) to watch, buffer sizes, and crash recovery. Currently set to monitor all logs in the <a href="https://www.gstatic.com/ct/log_list/v3/log_list.json">Google Log list</a>, the same set used by Chrome.</td></tr>
-<tr><td><code>ct_index.json</code></td><td><strong>Checkpoint file.</strong> Saves the last‑seen position per CT log so a restart resumes exactly where it left off.</td></tr>
-<tr><td><code>fetch‑domains‑names.py</code></td><td style="white-space:nowrap">Builds the master domain list <code>global-dataset.csv</code> from the main MongoDB database.</td></tr>
-<tr><td><code>data‑renew.py</code></td><td>Cross‑references <code>global-dataset.csv</code> against the live CT stream to find <strong>renewal candidates</strong> → writes <code>data-renew.csv</code>.</td></tr>
-<tr><td><code>data‑renew‑merge.py</code></td><td>Merges freshly crawled renewal certificates into the main DB.</td></tr>
-<tr><td><code>new-data.py</code></td><td>Pulls <strong>brand‑new</strong> domains from the stream, crawls them, inserts them into the main DB, and appends confirmed domains to <code>global-dataset.csv</code>.</td></tr>
-<tr><td><code>global‑dataset.csv</code></td><td>The master domain list (<code>index,domain</code>).</td></tr>
-</table>
+| File | Role |
+|---|---|
+| `main.py` | **Orchestrator**. Runs the complete pipeline from start to finish, including certificate renewal detection, new-domain discovery, database updates, and analytics regeneration. It is intended to be executed on a schedule (for example, using cron or Windows Task Scheduler) so the dataset stays continuously up to date. |
+| `go‑server.py` | Manages the **`certstream-server-go`** binary — a compiled Go server that connects to CT logs and exposes a WebSocket (`ws://localhost:8080/domains-only`). Streams discovered domains into MongoDB (`go-server.certificates`, marked `found: false`). |
+| `config.yml` | Configures the Go server: which CT log(s) to watch, buffer sizes, and crash recovery. Currently it is set to monitor all logs listed in the [Google Log list](https://www.gstatic.com/ct/log_list/v3/log_list.json) which are also included in the Chrome browser. |
+| `ct_index.json` | **Checkpoint file.**  Saves the last‑seen position per CT log so a restart resumes exactly where it left off. |
+| `fetch‑domains‑names.py` | Builds the master domain list `global-dataset.csv` from main MongoDB database.  |
+| `data‑renew.py` | Cross‑references `global-dataset.csv` against the live CT stream to find **renewal candidates** → writes `data-renew.csv`. |
+| `data‑renew‑merge.py` | Merges freshly crawled renewal certificates into the main database. |
+| `new-data.py` | Pulls **brand‑new** domains from the stream, crawls them, inserts them into the main DB, and appends confirmed domains to `global-dataset.csv`. |
+| `global‑dataset.csv` | The master domain list (`index,domain`). |
 
 
 ### How the automation runs (the 8 steps in `main.py`)
@@ -111,6 +107,13 @@ No data is lost when the pipeline cycle stops the Go server. The `ct_index.json`
 - **External:** a running **MongoDB** (default `localhost:27017`; to change the port or host, update `mongo_uri` in [`project-config.json`](project-config.json)), and the `certstream-server-go` binary. Download the build for your OS from the
    [releases page](https://github.com/d-Rickyy-b/certstream-server-go/releases/),
   place it in `binaries/`, then rename it to exactly `certstream-server-go`. Keep `config.yml` alongside.
+  
+  **Linux / macOS:** After downloading, make it executable:
+  ```bash
+  chmod +x binaries/certstream-server-go
+  ```
+  Windows user can skip this command 
+
 - **Python packages:** `pymongo`, `psutil`, `websocket-client` (used by `go-server.py`).
   
   First, navigate to the correct folder:
@@ -145,12 +148,11 @@ domain list / IP list ──▶ TLS handshake (:443) ──▶ extract PEM certi
 The domain-based crawler connects to domain names on port **443** and retrieves their SSL/TLS certificates. The production crawler is implemented in `src/crawler-args.py`, a multi-threaded, self-healing crawler designed for large-scale certificate collection.
 
 > **Want to see the crawler output without running it?**
-> Check [`data-sample.json`](data-sample.json), which contains a real parsed certificate document exactly as it is stored in MongoDB.
+> Check [`data-sample.json`](./dashboard/data-sample.json), which contains a real parsed certificate document exactly as it is stored in MongoDB.
 
 **How it works**
 
 The crawler reads domains from a CSV file, loads them into a MongoDB-backed job queue, and distributes the workload across multiple worker threads (30 by default). Each worker establishes a TLS connection, extracts the certificate, parses it using the `zcertificate` binary, and stores the resulting JSON document in MongoDB. A watchdog ("doctor") thread continuously monitors workers activity and automatically reassigns stalled jobs, allowing the crawler to recover from unexpected failures without manual intervention. Duplicate domains are skipped automatically, ensuring the same domain is never crawled more than once.
-
 
 ![domain-based](assets/figures/domain-based.png)
 
@@ -164,8 +166,8 @@ By default, the crawler reads its MongoDB connection URI, target database, and i
 |---|---|
 | `--db-name` | Target MongoDB database |
 | `--csv-file` | Path to the domain CSV file |
-| `--num-threads` | Number of worker threads (default: 30) |
 | `--mongodb-url` | MongoDB connection URI |
+| `--num-threads` | Number of worker threads (default: 30) |
 | `--retry-enabled` | Retry failed domains |
 | `--max-retries` | Maximum retry attempts per domain |
 | `--socket-timeout` | TLS handshake timeout |
@@ -175,6 +177,11 @@ Run the following command to see the complete list of supported options.
 ```bash
 python3 crawler-args.py --help
 ```
+
+
+**Before running:** Make sure the `zcertificate` binary is downloaded and executable in `binaries/`. See the [binaries section](#-repository-structure) for setup instructions.
+
+
 
 ### How to run:
 
@@ -195,14 +202,20 @@ python3 crawler-args.py
 **Override the target database:**
 
 ```bash 
-python3 crawler-args.py --db-name my-crawl
+python3 crawler-args.py --db-name <database-name>
 ```
 
-**Override the database and input CSV**
-
+**Override the database name and input CSV**
 ```bash 
-python3 crawler-args.py --db-name my-crawl --csv-file ../datasets/pk-domains.csv --num-threads 30
+python3 crawler-args.py --db-name <database-name> --csv-file <path-to-csv>
 ``` 
+
+**Override the database, CSV file, and thread count**
+```bash
+python3 crawler-args.py --db-name <database-name> --csv-file <path-to-csv> --num-threads <no-of-threads>
+```
+
+
 
 
 **Other contents:**
@@ -238,7 +251,7 @@ Instead of starting from domain names, this crawler scans Pakistan's allocated I
 
 **How it works**
 
-The crawler reads a list of IPv4 CIDR blocks (or individual IP addresses), expands them into scan targets, performs a TLS handshake on port **443**, extracts the server's certificate, parses it using the `zcertificate` binary, and stores the resulting JSON document in MongoDB. The interactive version additionally allows you to choose whether to send a dummy Server Name Indication (SNI) value during the TLS handshake, which improves certificate discovery on virtual-hosted servers.
+The crawler reads a list of IPv4 CIDR blocks (or individual IP addresses), expands them into scan targets, performs a TLS handshake on port **443**, extracts the server's certificate, parses it using the `zcertificate` binary, and stores the resulting JSON document in MongoDB.The interactive version additionally allows you to choose whether to send a dummy Server Name Indication (SNI) value during the TLS handshake, which improves certificate discovery on virtual-hosted servers.
 
 **Configuration**
 
@@ -254,6 +267,8 @@ Both `interactive-ip-crawler.py` and `static-ip-crawler.py` read their MongoDB c
 | `pk‑ip‑ranges.csv` | Complete list of Pakistan's IPv4 CIDR blocks used for full scans. |
 | `pk‑ip‑ranges‑mini.csv` | Small subset of CIDR blocks for quick testing. |
 | `results.txt` | Experimental results comparing scans with and without SNI, showing improved certificate discovery when using a dummy SNI value. |
+
+**Before running:** Make sure the `zcertificate` binary is downloaded and executable in `binaries/`. See the [binaries section](#-repository-structure) for setup instructions.
 
 **How to run**
 
