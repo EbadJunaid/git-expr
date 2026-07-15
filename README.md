@@ -69,7 +69,7 @@ It does two jobs at once:
 | `go‑server.py` | Manages the **`certstream-server-go`** binary — a compiled Go server that connects to CT logs and exposes a WebSocket (`ws://localhost:8080/domains-only`). Streams discovered domains into MongoDB (`go-server.certificates`, marked `found: false`). |
 | `config.yml` | Configures the Go server: which CT log(s) to watch, buffer sizes, and crash recovery. Currently it is set to monitor all logs listed in the [Google Log list](https://www.gstatic.com/ct/log_list/v3/log_list.json) which are also included in the Chrome browser. |
 | `ct_index.json` | **Checkpoint file.**  Saves the last‑seen position per CT log so a restart resumes exactly where it left off. |
-| `fetch‑domains‑names.py` | Builds the master domain list `global-dataset.csv` from the main MongoDB database.  |
+| `fetch‑domains‑names.py` | Builds the master domain list `global-dataset.csv` from main MongoDB database.  |
 | `data‑renew.py` | Cross‑references `global-dataset.csv` against the live CT stream to find **renewal candidates** → writes `data-renew.csv`. |
 | `data‑renew‑merge.py` | Merges freshly crawled renewal certificates into the main DB. |
 | `new-data.py` | Pulls **brand‑new** domains from the stream, crawls them, inserts them into the main DB, and appends confirmed domains to `global-dataset.csv`. |
@@ -306,4 +306,4 @@ Contributions, suggestions, and feedback are always welcome.
 
 
 ### LICENSE
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
