@@ -72,7 +72,7 @@ It does two jobs at once:
 <tr><td><code>go‑server.py</code></td><td>Manages the <strong><code>certstream-server-go</code></strong> binary — a compiled Go server connecting to CT logs, exposing a WebSocket (<code>ws://localhost:8080/domains-only</code>). Streams discovered domains into MongoDB (<code>go-server.certificates</code>, marked <code>found: false</code>).</td></tr>
 <tr><td><code>config.yml</code></td><td>Configures the Go server: which CT log(s) to watch, buffer sizes, and crash recovery. Currently set to monitor all logs in the <a href="https://www.gstatic.com/ct/log_list/v3/log_list.json">Google Log list</a>, the same set used by Chrome.</td></tr>
 <tr><td><code>ct_index.json</code></td><td><strong>Checkpoint file.</strong> Saves the last‑seen position per CT log so a restart resumes exactly where it left off.</td></tr>
-<tr><td><code>fetch‑domains‑names.py</code></td><td>Builds the master domain list <code>global-dataset.csv</code> from the main MongoDB database.</td></tr>
+<tr><td><code>fetch‑domains‑names.py</code></td><td style="white-space:nowrap">Builds the master domain list <code>global-dataset.csv</code> from the main MongoDB database.</td></tr>
 <tr><td><code>data‑renew.py</code></td><td>Cross‑references <code>global-dataset.csv</code> against the live CT stream to find <strong>renewal candidates</strong> → writes <code>data-renew.csv</code>.</td></tr>
 <tr><td><code>data‑renew‑merge.py</code></td><td>Merges freshly crawled renewal certificates into the main DB.</td></tr>
 <tr><td><code>new-data.py</code></td><td>Pulls <strong>brand‑new</strong> domains from the stream, crawls them, inserts them into the main DB, and appends confirmed domains to <code>global-dataset.csv</code>.</td></tr>
