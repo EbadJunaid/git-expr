@@ -52,7 +52,7 @@ All routes below are relative to `/dashboard`.
 | `ca‑ranking` | Ranks Certificate Authorities based on certificate quality and security characteristics. See [`ca-ranking.md`](../formula/ca-ranking.md) |
 | `validity‑analytics` | Validity period analysis — average lifetime, expiring in 30/90 days, compliance with the 398‑day rule, issuance timeline. |
 | `signature‑hash` | Signature algorithms, hash compliance %, weak‑hash alerts, key‑size distribution, adoption trends. |
-| `san‑analytics` | Subject Alternative Names — SANs per certificate, wildcard vs standard, top TLDs, multi‑domain ("blast radius") certs. |
+| `san‑analytics` | Subject Alternative Names — SANs per certificate, wildcard vs standard, top TLDs, multi‑domain certs. |
 | `shared‑keys` | Public‑key **reuse** detection (a security risk): groups of certificates sharing the same key. Drill into a group via `shared‑keys/[publicKeyHash]`. |
 | `vulnerabilities` | A **ranked risk view** scoring each certificate. See [`vulnerabilities.md`](./vulnerabilities.md) for the exact scoring formula. |
 | `active‑vs‑expired` | Detailed breakdown of active, expiring, and expired certificates |
